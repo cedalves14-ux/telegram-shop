@@ -1,0 +1,135 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Boutique Telegram Mini App</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+        .product { background: #fff; border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .product h2 { margin: 0 0 10px 0; }
+        button { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .contact { background: #0088cc; color: #fff; }
+        .buy { background: #4CAF50; color: #fff; }
+    </style>
+</head>
+<body>
+
+<h1>Bienvenue dans la boutique !</h1>
+
+<div id="products"></div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    // Initialise Telegram WebApp
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const products = [
+        { name: "Produit A", prices: {1: 10, 5: 45, 10: 80} },
+        { name: "Produit B", prices: {1: 15, 3: 40, 5: 60} },
+        { name: "Produit C", prices: {1: 7, 10: 65, 20: 120} }
+    ];
+
+    const productsDiv = document.getElementById('products');
+
+    products.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        const title = document.createElement('h2');
+        title.textContent = p.name;
+        div.appendChild(title);
+
+        for (const qty in p.prices) {
+            const btn = document.createElement('button');
+            btn.className = 'buy';
+            btn.textContent = `${qty} unité(s) : ${p.prices[qty]}€`;
+            btn.onclick = () => {
+                // Envoyer les infos au bot
+                tg.sendData(JSON.stringify({product: p.name, quantity: qty}));
+                alert(`Vous avez sélectionné ${qty} ${p.name}`);
+            };
+            div.appendChild(btn);
+        }
+
+        // Bouton Contact Telegram
+        const contactBtn = document.createElement('button');
+        contactBtn.className = 'contact';
+        contactBtn.textContent = "Contact Telegram";
+        contactBtn.onclick = () => window.open("https://t.me/High3rCryptoCali_bot/fff", "_blank");
+        div.appendChild(contactBtn);
+
+        productsDiv.appendChild(div);
+    });
+</script>
+
+</body>
+</html>
+=======
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Boutique Telegram Mini App</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+        .product { background: #fff; border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .product h2 { margin: 0 0 10px 0; }
+        button { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .contact { background: #0088cc; color: #fff; }
+        .buy { background: #4CAF50; color: #fff; }
+    </style>
+</head>
+<body>
+
+<h1>Bienvenue dans la boutique !</h1>
+
+<div id="products"></div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    // Initialise Telegram WebApp
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const products = [
+        { name: "Produit A", prices: {1: 10, 5: 45, 10: 80} },
+        { name: "Produit B", prices: {1: 15, 3: 40, 5: 60} },
+        { name: "Produit C", prices: {1: 7, 10: 65, 20: 120} }
+    ];
+
+    const productsDiv = document.getElementById('products');
+
+    products.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        const title = document.createElement('h2');
+        title.textContent = p.name;
+        div.appendChild(title);
+
+        for (const qty in p.prices) {
+            const btn = document.createElement('button');
+            btn.className = 'buy';
+            btn.textContent = `${qty} unité(s) : ${p.prices[qty]}€`;
+            btn.onclick = () => {
+                // Envoyer les infos au bot
+                tg.sendData(JSON.stringify({product: p.name, quantity: qty}));
+                alert(`Vous avez sélectionné ${qty} ${p.name}`);
+            };
+            div.appendChild(btn);
+        }
+
+        // Bouton Contact Telegram
+        const contactBtn = document.createElement('button');
+        contactBtn.className = 'contact';
+        contactBtn.textContent = "Contact Telegram";
+        contactBtn.onclick = () => window.open("https://t.me/High3rCryptoCali_bot/fff", "_blank");
+        div.appendChild(contactBtn);
+
+        productsDiv.appendChild(div);
+    });
+</script>
+
+</body>
+</html>
+>>>>>>> 8ae2981e8cb24026544464c10b5d38227a8ad2d3
