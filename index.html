@@ -23,7 +23,6 @@
       color:#fff;
       position:relative;
     }
-    /* Calque en fond basé sur ton image */
     body::before{
       content:"";
       position:fixed;
@@ -66,12 +65,24 @@
     .product-media{width:100%;height:260px;border-radius:10px;overflow:hidden;background:#eee;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
     .product-media img,.product-media video{width:100%;height:100%;object-fit:cover}
     .desc{color:var(--muted);line-height:1.45;margin-bottom:8px}
-    .price-variants div{font-size:0.9rem;color:var(--muted);margin-bottom:4px}
-    .stepper{display:flex;align-items:center;gap:8px}
-    .step-btn{width:42px;height:42px;border-radius:10px;border:none;background:#f3f6f9;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .1s}
-    .step-btn:active{transform:scale(0.9)}
-    .qty{min-width:56px;padding:8px;border-radius:8px;border:1px solid #e6e9ee;text-align:center;font-weight:600;background:white;color:#111}
-    .price{margin-left:auto;font-weight:700;font-size:1.15rem;color:var(--success)}
+    .variants{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+    .variant-btn{
+      padding:10px 14px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      background:#f3f6f9;
+      color:#111;
+      transition:transform .1s, background .2s, color .2s;
+      flex:1 1 calc(50% - 8px);
+      text-align:center;
+    }
+    .variant-btn.selected{
+      background:var(--accent);
+      color:white;
+    }
+    .price{margin-top:8px;font-weight:700;font-size:1.15rem;color:var(--success)}
     .actions{display:grid;gap:10px;margin-top:12px}
     .btn{padding:12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s}
     .btn svg{width:20px;height:20px;stroke-width:2}
@@ -100,13 +111,8 @@
       <div class="product-media" id="product-media"></div>
       <h3 id="product-title"></h3>
       <p class="desc" id="product-desc"></p>
-      <div class="price-variants" id="product-variants"></div>
-      <div class="stepper">
-        <button class="step-btn" id="minus">-</button>
-        <input type="text" class="qty" id="qty" value="1" readonly/>
-        <button class="step-btn" id="plus">+</button>
-        <div class="price" id="price"></div>
-      </div>
+      <div class="variants" id="variants-container"></div>
+      <div class="price" id="price"></div>
       <div class="actions">
         <button class="btn btn-buy" id="buyBtn">Envoyer sa commande</button>
         <a href="https://t.me/k3ks9" target="_blank" class="btn btn-contact">Contact Telegram</a>
@@ -129,18 +135,6 @@ const products = [
   { id:6, title:"Produit F", desc:"Description courte du produit F.", media:"header.png" }
 ];
 
-const grid=document.getElementById("products-grid");
-const home=document.getElementById("home-page");
-const productPage=document.getElementById("product-page");
-const productMedia=document.getElementById("product-media");
-const productTitle=document.getElementById("product-title");
-const productDesc=document.getElementById("product-desc");
-const productVariants=document.getElementById("product-variants");
-const qtyInput=document.getElementById("qty");
-const priceDiv=document.getElementById("price");
-const buyBtn=document.getElementById("buyBtn");
-const backBtn=document.getElementById("backBtn");
-
 const variants = [
   {label:"1L", price:10},
   {label:"10L", price:80},
@@ -149,14 +143,24 @@ const variants = [
   {label:"200L", price:1300}
 ];
 
-let currentProduct=null;
-let currentPrice=0;
-let qty=1;
+const grid = document.getElementById("products-grid");
+const home = document.getElementById("home-page");
+const productPage = document.getElementById("product-page");
+const productMedia = document.getElementById("product-media");
+const productTitle = document.getElementById("product-title");
+const productDesc = document.getElementById("product-desc");
+const variantsContainer = document.getElementById("variants-container");
+const priceDiv = document.getElementById("price");
+const buyBtn = document.getElementById("buyBtn");
+const backBtn = document.getElementById("backBtn");
+
+let currentProduct = null;
+let currentVariantIndex = 0;
 
 products.forEach(p=>{
-  const card=document.createElement("div");
-  card.className="card";
-  card.innerHTML=`
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
     <div class="media-wrap">
       <img src="${p.media}" alt="">
     </div>
@@ -164,40 +168,46 @@ products.forEach(p=>{
       <h3>${p.title}</h3>
       <span class="badge">Voir détails</span>
     </div>`;
-  card.onclick=()=>showProduct(p);
+  card.onclick = () => showProduct(p);
   grid.appendChild(card);
 });
 
 function showProduct(p){
-  currentProduct=p;
-  home.style.display="none";
-  productPage.style.display="block";
-  productMedia.innerHTML=`<img src="${p.media}" alt="">`;
-  productTitle.textContent=p.title;
-  productDesc.textContent=p.desc;
+  currentProduct = p;
+  home.style.display = "none";
+  productPage.style.display = "block";
+  productMedia.innerHTML = `<img src="${p.media}" alt="">`;
+  productTitle.textContent = p.title;
+  productDesc.textContent = p.desc;
 
-  productVariants.innerHTML="";
-  variants.forEach(v=>{
-    const div=document.createElement("div");
-    div.textContent=`${v.label} — ${v.price}€`;
-    productVariants.appendChild(div);
+  variantsContainer.innerHTML = "";
+  variants.forEach((v, index) => {
+    const btn = document.createElement("button");
+    btn.className = "variant-btn" + (index === 0 ? " selected" : "");
+    btn.textContent = `${v.label} — ${v.price}€`;
+    btn.onclick = () => selectVariant(index);
+    variantsContainer.appendChild(btn);
   });
 
-  qty=1;
-  qtyInput.value=qty;
-  currentPrice=variants[0].price;
+  currentVariantIndex = 0;
+  updatePrice();
+}
+
+function selectVariant(index){
+  currentVariantIndex = index;
+  Array.from(variantsContainer.children).forEach((btn, i) => {
+    btn.classList.toggle("selected", i === index);
+  });
   updatePrice();
 }
 
 function updatePrice(){
-  priceDiv.textContent=(currentPrice*qty)+"€";
+  priceDiv.textContent = variants[currentVariantIndex].price + "€";
 }
 
-document.getElementById("plus").onclick=()=>{qty++;qtyInput.value=qty;updatePrice();}
-document.getElementById("minus").onclick=()=>{if(qty>1){qty--;qtyInput.value=qty;updatePrice();}}
-backBtn.onclick=()=>{home.style.display="block";productPage.style.display="none";}
-buyBtn.onclick=()=>{
-  alert("Commande envoyée !");
+backBtn.onclick = () => {home.style.display = "block"; productPage.style.display = "none";}
+buyBtn.onclick = () => {
+  alert(`Commande envoyée pour ${currentProduct.title} — ${variants[currentVariantIndex].label} à ${variants[currentVariantIndex].price}€ !`);
 };
 </script>
 </body>
