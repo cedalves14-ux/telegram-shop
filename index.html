@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
-      --bg:#f2f6fb;
+      --bg:#0f0f1a;
       --card:#ffffff;
-      --accent:#0088cc;
-      --accent-dark:#0077b3;
+      --accent:#00ff66;
+      --accent-dark:#009944;
       --success:#28a745;
       --muted:#6b7280;
       --radius:12px;
@@ -20,51 +20,52 @@
       margin:0;
       font-family:Inter,"Segoe UI",Arial,sans-serif;
       background:var(--bg);
-      color:#111;
+      color:#fff;
       position:relative;
     }
-    /* Calque en fond */
+    /* Calque en fond basé sur ton image */
     body::before{
       content:"";
       position:fixed;
       top:0;left:0;
       width:100%;height:100%;
-      background:url('https://picsum.photos/1600/900?blur') center/cover no-repeat;
-      opacity:0.08;
+      background:url('header.png') center/cover no-repeat;
+      filter:blur(20px) brightness(0.4);
       z-index:-1;
     }
     header{
       position:sticky;
       top:0;
       z-index:40;
-      background:linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.7));
+      background:rgba(0,0,0,0.6);
       backdrop-filter:blur(4px);
-      padding:12px 16px;
+      padding:0;
       display:flex;
+      flex-direction:column;
       align-items:center;
-      gap:12px;
-      box-shadow:0 1px 0 rgba(0,0,0,0.04)
+      box-shadow:0 1px 0 rgba(0,0,0,0.3);
     }
-    .logo{
-      width:42px;height:42px;border-radius:10px;
-      display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
-      color:white;font-weight:700;font-size:18px;
-      box-shadow:0 6px 14px rgba(0,136,204,0.18)
+    header img{
+      width:100%;
+      max-height:200px;
+      object-fit:cover;
+      display:block;
     }
-    .title{font-size:1.05rem;font-weight:600;color:#0f1724}
+    .title{
+      display:none; /* Titre inutile, car déjà présent sur l'image */
+    }
     main{padding:16px;max-width:1100px;margin:0 auto}
-    h2{margin:8px 0 12px;font-size:1.05rem;color:#0f1724}
+    h2{margin:8px 0 12px;font-size:1.05rem;color:#00ff66}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--gap);margin-bottom:18px}
-    .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 18px rgba(12,18,28,0.06);cursor:pointer;display:flex;flex-direction:column;transition:transform .16s,box-shadow .16s}
-    .card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 14px 30px rgba(12,18,28,0.09)}
-    .media-wrap{height:140px;overflow:hidden;background:#f3f6f9;display:flex;align-items:center;justify-content:center}
+    .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 18px rgba(12,18,28,0.3);cursor:pointer;display:flex;flex-direction:column;transition:transform .16s,box-shadow .16s}
+    .card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 14px 30px rgba(12,18,28,0.5)}
+    .media-wrap{height:140px;overflow:hidden;background:#111;display:flex;align-items:center;justify-content:center}
     .media-wrap img,.media-wrap video{width:100%;height:100%;object-fit:cover}
     .card-body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1;justify-content:space-between}
-    .card h3{margin:0;font-size:1rem;color:#07102a;text-align:center}
+    .card h3{margin:0;font-size:1rem;color:#111;text-align:center}
     .badge{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(0,0,0,0.06);color:var(--muted);font-size:13px;text-align:center;margin:auto 0 0}
     #product-page{display:none;padding-top:8px}
-    .product-card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 12px 30px rgba(12,18,28,0.06)}
+    .product-card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 12px 30px rgba(12,18,28,0.3)}
     .product-media{width:100%;height:260px;border-radius:10px;overflow:hidden;background:#eee;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
     .product-media img,.product-media video{width:100%;height:100%;object-fit:cover}
     .desc{color:var(--muted);line-height:1.45;margin-bottom:8px}
@@ -72,7 +73,7 @@
     .stepper{display:flex;align-items:center;gap:8px}
     .step-btn{width:42px;height:42px;border-radius:10px;border:none;background:#f3f6f9;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .1s}
     .step-btn:active{transform:scale(0.9)}
-    .qty{min-width:56px;padding:8px;border-radius:8px;border:1px solid #e6e9ee;text-align:center;font-weight:600;background:white}
+    .qty{min-width:56px;padding:8px;border-radius:8px;border:1px solid #e6e9ee;text-align:center;font-weight:600;background:white;color:#111}
     .price{margin-left:auto;font-weight:700;font-size:1.15rem;color:var(--success)}
     .actions{display:grid;gap:10px;margin-top:12px}
     .btn{padding:12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s}
@@ -89,50 +90,31 @@
 <body>
 
 <header>
-  <div class="logo">H</div>
-  <div class="title">HiGH3R CORP</div>
+  <img src="header.png" alt="HiGH3R CORP"/>
 </header>
 
 <main>
   <section id="home-page">
-    <h2>Slots disponibles</h2>
+    <h2>Produits disponibles</h2>
     <div class="grid" id="products-grid"></div>
   </section>
 
   <section id="product-page">
     <div class="product-card">
       <div class="product-media" id="product-media"></div>
-      <h2 id="product-name"></h2>
+      <h3 id="product-title"></h3>
       <p class="desc" id="product-desc"></p>
-      <div class="price-variants" id="price-variants"></div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="stepper">
-          <button class="step-btn" id="qty-decr">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <input type="text" id="qty-input" class="qty" value="1" />
-          <button class="step-btn" id="qty-incr">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-        <div style="margin-left:auto">
-          <div style="font-size:12px;color:var(--muted)">Total</div>
-          <div class="price" id="total-price">0€</div>
-        </div>
+      <div class="price-variants" id="product-variants"></div>
+      <div class="stepper">
+        <button class="step-btn" id="minus">-</button>
+        <input type="text" class="qty" id="qty" value="1" readonly/>
+        <button class="step-btn" id="plus">+</button>
+        <div class="price" id="price"></div>
       </div>
       <div class="actions">
-        <button class="btn btn-buy" id="buy-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-          Envoyer sa commande
-        </button>
-        <button class="btn btn-contact" id="contact-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z"/></svg>
-          Contact
-        </button>
-        <button class="btn btn-back" id="back-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Retour
-        </button>
+        <button class="btn btn-buy" id="buyBtn">Envoyer sa commande</button>
+        <a href="https://t.me/k3ks9" target="_blank" class="btn btn-contact">Contact Telegram</a>
+        <button class="btn btn-back" id="backBtn">← Retour</button>
       </div>
     </div>
   </section>
@@ -142,133 +124,85 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-  const tg = window.Telegram?.WebApp;
-  if(tg) tg.expand();
-
-  const products=[
-    {name:"Produit A",description:"Super produit A.",media:"https://picsum.photos/400/250?random=1",type:"img",prices:{1:10,10:80,50:350,100:680,200:1300}},
-    {name:"Produit B",description:"Produit B de démonstration.",media:"https://www.w3schools.com/html/mov_bbb.mp4",type:"video",prices:{1:10,10:80,50:350,100:680,200:1300}},
-    {name:"Produit C",description:"Produit C économique.",media:"https://picsum.photos/400/250?random=2",type:"img",prices:{1:10,10:80,50:350,100:680,200:1300}}
-  ];
-
-  const grid=document.getElementById('products-grid');
-  const homePage=document.getElementById('home-page');
-  const productPage=document.getElementById('product-page');
-  const productMedia=document.getElementById('product-media');
-  const productName=document.getElementById('product-name');
-  const productDesc=document.getElementById('product-desc');
-  const priceVariants=document.getElementById('price-variants');
-  const qtyInput=document.getElementById('qty-input');
-  const totalPrice=document.getElementById('total-price');
-  const buyBtn=document.getElementById('buy-btn');
-  const contactBtn=document.getElementById('contact-btn');
-  const backBtn=document.getElementById('back-btn');
-  const toast=document.getElementById('toast');
-  let activeProduct=null;
-
-  function showToast(msg){
-    toast.textContent=msg;
-    toast.classList.add("show");
-    setTimeout(()=>toast.classList.remove("show"),2000);
+const products = [
+  {
+    id:1,
+    title:"Produit Exemple",
+    desc:"Description du produit.",
+    media:"header.png"
   }
+];
 
-  function confetti(){
-    for(let i=0;i<25;i++){
-      const d=document.createElement("div");
-      d.textContent="🎉";
-      d.style.position="fixed";
-      d.style.left=Math.random()*100+"vw";
-      d.style.top="-20px";
-      d.style.fontSize="20px";
-      d.style.animation=`fall ${2+Math.random()*3}s linear`;
-      document.body.appendChild(d);
-      setTimeout(()=>d.remove(),4000);
-    }
-  }
+const grid=document.getElementById("products-grid");
+const home=document.getElementById("home-page");
+const productPage=document.getElementById("product-page");
+const productMedia=document.getElementById("product-media");
+const productTitle=document.getElementById("product-title");
+const productDesc=document.getElementById("product-desc");
+const productVariants=document.getElementById("product-variants");
+const qtyInput=document.getElementById("qty");
+const priceDiv=document.getElementById("price");
+const buyBtn=document.getElementById("buyBtn");
+const backBtn=document.getElementById("backBtn");
 
-  products.forEach((p,i)=>{
-    const card=document.createElement('div');
-    card.className='card';
-    const media=document.createElement('div');
-    media.className='media-wrap';
-    if(p.type==="img"){
-      const img=document.createElement('img');
-      img.src=p.media;
-      media.appendChild(img);
-    } else {
-      const v=document.createElement('video');
-      v.src=p.media;
-      v.muted=true;
-      v.autoplay=true;
-      v.loop=true;
-      media.appendChild(v);
-    }
-    const body=document.createElement('div');
-    body.className='card-body';
-    const title=document.createElement('h3');
-    title.textContent=p.name;
-    const badge=document.createElement('div');
-    badge.className='badge';
-    badge.textContent="dès "+Math.min(...Object.values(p.prices))+"€";
-    body.appendChild(title);
-    body.appendChild(badge);
-    card.appendChild(media);
-    card.appendChild(body);
-    card.onclick=()=>openProduct(i);
-    grid.appendChild(card);
+const variants = [
+  {label:"1L", price:10},
+  {label:"10L", price:80},
+  {label:"50L", price:350},
+  {label:"100L", price:680},
+  {label:"200L", price:1300}
+];
+
+let currentProduct=null;
+let currentPrice=0;
+let qty=1;
+
+products.forEach(p=>{
+  const card=document.createElement("div");
+  card.className="card";
+  card.innerHTML=`
+    <div class="media-wrap">
+      <img src="${p.media}" alt="">
+    </div>
+    <div class="card-body">
+      <h3>${p.title}</h3>
+      <span class="badge">Voir détails</span>
+    </div>`;
+  card.onclick=()=>showProduct(p);
+  grid.appendChild(card);
+});
+
+function showProduct(p){
+  currentProduct=p;
+  home.style.display="none";
+  productPage.style.display="block";
+  productMedia.innerHTML=`<img src="${p.media}" alt="">`;
+  productTitle.textContent=p.title;
+  productDesc.textContent=p.desc;
+
+  productVariants.innerHTML="";
+  variants.forEach(v=>{
+    const div=document.createElement("div");
+    div.textContent=`${v.label} — ${v.price}€`;
+    productVariants.appendChild(div);
   });
 
-  function openProduct(i){
-    activeProduct=products[i];
-    productMedia.innerHTML="";
-    if(activeProduct.type==="img"){
-      const img=document.createElement('img');
-      img.src=activeProduct.media;
-      productMedia.appendChild(img);
-    } else {
-      const v=document.createElement('video');
-      v.src=activeProduct.media;
-      v.controls=true;
-      productMedia.appendChild(v);
-    }
+  qty=1;
+  qtyInput.value=qty;
+  currentPrice=variants[0].price;
+  updatePrice();
+}
 
-    productName.textContent=activeProduct.name;
-    productDesc.textContent=activeProduct.description;
+function updatePrice(){
+  priceDiv.textContent=(currentPrice*qty)+"€";
+}
 
-    // Affichage variantes de prix
-    priceVariants.innerHTML="";
-    const entries=Object.entries(activeProduct.prices).sort((a,b)=>a[0]-b[0]);
-    entries.forEach(([qty,price])=>{
-      const p=document.createElement('div');
-      p.textContent=qty+" unité"+(qty>1?"s":"")+" : "+price+"€";
-      priceVariants.appendChild(p);
-    });
-
-    qtyInput.value=1;
-    updateTotal();
-    homePage.style.display="none";
-    productPage.style.display="block";
-  }
-
-  function updateTotal(){
-    const q=parseInt(qtyInput.value)||1;
-    const prices=activeProduct.prices;
-    const sortedKeys=Object.keys(prices).map(Number).sort((a,b)=>a-b);
-    let applicableQty=sortedKeys[0];
-    for(const k of sortedKeys){
-      if(q>=k) applicableQty=k;
-      else break;
-    }
-    const total=prices[applicableQty]*(q/applicableQty);
-    totalPrice.textContent=total.toFixed(2)+"€";
-  }
-
-  document.getElementById('qty-incr').onclick=()=>{qtyInput.value=parseInt(qtyInput.value||1)+1;updateTotal();}
-  document.getElementById('qty-decr').onclick=()=>{qtyInput.value=Math.max(1,parseInt(qtyInput.value||1)-1);updateTotal();}
-  qtyInput.oninput=()=>updateTotal();
-  buyBtn.onclick=()=>{const qty=qtyInput.value;tg?.sendData?.(JSON.stringify({product:activeProduct.name,quantity:qty}));showToast("✅ "+qty+" "+activeProduct.name+" ajouté");confetti();}
-  contactBtn.onclick=()=>window.open("https://t.me/k3ks9","_blank");
-  backBtn.onclick=()=>{productPage.style.display="none";homePage.style.display="block";}
+document.getElementById("plus").onclick=()=>{qty++;qtyInput.value=qty;updatePrice();}
+document.getElementById("minus").onclick=()=>{if(qty>1){qty--;qtyInput.value=qty;updatePrice();}}
+backBtn.onclick=()=>{home.style.display="block";productPage.style.display="none";}
+buyBtn.onclick=()=>{
+  alert("Commande envoyée !");
+};
 </script>
 </body>
 </html>
