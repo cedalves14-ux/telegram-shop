@@ -1,133 +1,432 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Boutique Telegram Mini App</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-        .product { background: #fff; border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
-        .product h2 { margin: 0 0 10px 0; }
-        button { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
-        .contact { background: #0088cc; color: #fff; }
-        .buy { background: #4CAF50; color: #fff; }
-    </style>
+  <meta charset="utf-8" />
+  <title>Boutique Telegram — Mini App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f2f6fb;
+      --card:#ffffff;
+      --accent:#0088cc;
+      --accent-dark:#0077b3;
+      --success:#28a745;
+      --muted:#6b7280;
+      --radius:12px;
+      --gap:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter, "Segoe UI", Arial, sans-serif;
+      background:var(--bg);color:#111;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* Header minimaliste */
+    header{
+      position:sticky;top:0;z-index:40;
+      background:linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.7));
+      backdrop-filter: blur(4px);
+      padding:12px 16px;
+      display:flex;align-items:center;gap:12px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+      transition:padding .18s, box-shadow .18s;
+    }
+    header.scrolled{ padding:8px 16px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+    .logo{
+      width:42px;height:42px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      color:white;font-weight:700;font-size:18px;
+      box-shadow:0 6px 14px rgba(0,136,204,0.18);
+    }
+    .title{font-size:1.05rem; font-weight:600; color:#0f1724;}
+    .spacer{flex:1}
+
+    main{padding:16px; max-width:1100px; margin:0 auto;}
+
+    h2{margin:8px 0 12px;font-size:1.05rem;color:#0f1724}
+
+    /* Grid cards */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
+      gap:var(--gap);
+      margin-bottom:18px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow: 0 6px 18px rgba(12,18,28,0.06);
+      cursor:pointer; display:flex;flex-direction:column;
+      transition:transform .16s ease, box-shadow .16s;
+      min-height:220px;
+      position:relative;
+    }
+    .card:hover{ transform:translateY(-6px); box-shadow: 0 14px 30px rgba(12,18,28,0.09); }
+
+    .media-wrap{height:140px; overflow:hidden; background:#f3f6f9; display:flex;align-items:center;justify-content:center;}
+    .media-wrap img, .media-wrap video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .card-body{ padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; justify-content:space-between; }
+    .card h3{ margin:0;font-size:1rem; color:#07102a; text-align:center; }
+    .badge{
+      display:inline-block;padding:6px 8px;border-radius:999px;
+      background:rgba(0,0,0,0.06); color:var(--muted); font-size:13px;
+      text-align:center;margin:auto 0 0;
+    }
+
+    /* Product page */
+    #product-page{ display:none; padding-top:8px; }
+    .product-card{
+      background:var(--card); border-radius:var(--radius); padding:14px; box-shadow:0 12px 30px rgba(12,18,28,0.06);
+    }
+    .product-media{ width:100%; height:260px; border-radius:10px; overflow:hidden; background:#eee; display:flex;align-items:center;justify-content:center; margin-bottom:12px;}
+    .product-media img, .product-media video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .product-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .desc{ color:var(--muted); line-height:1.45; margin-bottom:8px; }
+
+    /* Stepper */
+    .stepper{ display:flex; align-items:center; gap:8px; }
+    .step-btn{
+      width:40px;height:40px;border-radius:10px;border:none;background:#f3f6f9;font-weight:600;font-size:18px;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center; box-shadow:inset 0 -1px 0 rgba(0,0,0,0.02);
+    }
+    .qty{ min-width:56px;padding:8px;border-radius:8px;border:1px solid #e6e9ee; text-align:center; font-weight:600;background:white; }
+
+    .price{
+      margin-left:auto; font-weight:700; font-size:1.15rem; color:var(--success);
+    }
+
+    .actions{ display:grid; gap:10px; margin-top:12px; }
+    .btn{
+      padding:12px;border-radius:10px;border:none; cursor:pointer;font-weight:700;
+      display:inline-flex;align-items:center;justify-content:center; gap:8px;
+    }
+    .btn-buy{ background:var(--success); color:white; }
+    .btn-contact{ background:var(--accent); color:white; }
+    .btn-back{ background:#eef2f7; color:#111; }
+
+    /* toast */
+    #toast{
+      position:fixed; left:50%; transform:translateX(-50%); bottom:28px;
+      background:#0f1724;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.4); opacity:0; pointer-events:none;
+      transition:opacity .25s, transform .25s;
+    }
+    #toast.show{ opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(-6px); }
+
+    /* small screens tighten */
+    @media (max-width:420px){
+      .media-wrap{height:110px}
+      .product-media{height:220px}
+    }
+  </style>
 </head>
 <body>
 
-<h1>Bienvenue dans la boutique !</h1>
+<header id="topHeader">
+  <div class="logo">B</div>
+  <div class="title">Boutique</div>
+  <div class="spacer"></div>
+  <!-- bouton d'action minimal -->
+  <div style="font-size:13px;color:var(--muted)">Slots ouverts</div>
+</header>
 
-<div id="products"></div>
+<main>
+  <!-- HOME -->
+  <section id="home-page">
+    <h2>Slots disponibles</h2>
+    <div class="grid" id="products-grid" aria-live="polite"></div>
+  </section>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-    // Initialise Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+  <!-- PRODUCT -->
+  <section id="product-page" aria-hidden="true">
+    <div style="display:flex;gap:14px;flex-direction:column">
+      <div class="product-card" id="product-card">
+        <div class="product-media" id="product-media"></div>
+        <div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1">
+              <h2 id="product-name" style="margin:0;font-size:1.2rem"></h2>
+              <div class="desc" id="product-desc"></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--muted)">Prix</div>
+              <div class="price" id="product-price">0€</div>
+            </div>
+          </div>
 
-    const products = [
-        { name: "Produit A", prices: {1: 10, 5: 45, 10: 80} },
-        { name: "Produit B", prices: {1: 15, 3: 40, 5: 60} },
-        { name: "Produit C", prices: {1: 7, 10: 65, 20: 120} }
-    ];
+          <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <div class="stepper" aria-label="Quantité">
+              <button class="step-btn" id="qty-decr" aria-label="Réduire">−</button>
+              <input type="text" id="qty-input" class="qty" value="1" inputmode="numeric" />
+              <button class="step-btn" id="qty-incr" aria-label="Augmenter">+</button>
+            </div>
 
-    const productsDiv = document.getElementById('products');
+            <div style="min-width:120px;margin-left:auto">
+              <div style="font-size:12px;color:var(--muted)">Total</div>
+              <div class="price" id="total-price">0€</div>
+            </div>
+          </div>
 
-    products.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'product';
-        const title = document.createElement('h2');
-        title.textContent = p.name;
-        div.appendChild(title);
+          <div class="actions">
+            <button class="btn btn-buy" id="buy-btn">Acheter ✅</button>
+            <button class="btn btn-contact" id="contact-btn">Contacter sur Telegram</button>
+            <button class="btn btn-back" id="back-btn">⬅ Retour</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-        for (const qty in p.prices) {
-            const btn = document.createElement('button');
-            btn.className = 'buy';
-            btn.textContent = `${qty} unité(s) : ${p.prices[qty]}€`;
-            btn.onclick = () => {
-                // Envoyer les infos au bot
-                tg.sendData(JSON.stringify({product: p.name, quantity: qty}));
-                alert(`Vous avez sélectionné ${qty} ${p.name}`);
-            };
-            div.appendChild(btn);
-        }
-
-        // Bouton Contact Telegram
-        const contactBtn = document.createElement('button');
-        contactBtn.className = 'contact';
-        contactBtn.textContent = "Contact Telegram";
-        contactBtn.onclick = () => window.open("https://t.me/High3rCryptoCali_bot/fff", "_blank");
-        div.appendChild(contactBtn);
-
-        productsDiv.appendChild(div);
-    });
-</script>
-
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Boutique Telegram Mini App</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-        .product { background: #fff; border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
-        .product h2 { margin: 0 0 10px 0; }
-        button { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
-        .contact { background: #0088cc; color: #fff; }
-        .buy { background: #4CAF50; color: #fff; }
-    </style>
-</head>
-<body>
-
-<h1>Bienvenue dans la boutique !</h1>
-
-<div id="products"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-    // Initialise Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+  // Telegram WebApp init
+  const tg = window.Telegram?.WebApp;
+  if (tg?.initData) {
+    try{ tg.expand(); } catch(e){}
+  }
 
-    const products = [
-        { name: "Produit A", prices: {1: 10, 5: 45, 10: 80} },
-        { name: "Produit B", prices: {1: 15, 3: 40, 5: 60} },
-        { name: "Produit C", prices: {1: 7, 10: 65, 20: 120} }
-    ];
+  // Données (exemples) - remplace urls par tes médias
+  const products = [
+    { id: 'A', name: 'Produit A', description: 'Description complète du produit A — qualité premium.', media: 'https://via.placeholder.com/800x500.png?text=Produit+A', type:'img', basePrices: {1:10,5:45,10:80} },
+    { id: 'B', name: 'Produit B', description: 'Vidéo de démonstration B — parfait pour test.', media: 'https://www.w3schools.com/html/mov_bbb.mp4', type:'video', basePrices: {1:15,3:40,5:60} },
+    { id: 'C', name: 'Produit C', description: 'Produit C — économique et durable.', media: 'https://via.placeholder.com/800x500.png?text=Produit+C', type:'img', basePrices: {1:7,10:65,20:120} }
+  ];
 
-    const productsDiv = document.getElementById('products');
+  // UI refs
+  const grid = document.getElementById('products-grid');
+  const homePage = document.getElementById('home-page');
+  const productPage = document.getElementById('product-page');
+  const productMedia = document.getElementById('product-media');
+  const productName = document.getElementById('product-name');
+  const productDesc = document.getElementById('product-desc');
+  const productPrice = document.getElementById('product-price');
+  const totalPrice = document.getElementById('total-price');
+  const qtyInput = document.getElementById('qty-input');
+  const qtyIncr = document.getElementById('qty-incr');
+  const qtyDecr = document.getElementById('qty-decr');
+  const buyBtn = document.getElementById('buy-btn');
+  const contactBtn = document.getElementById('contact-btn');
+  const backBtn = document.getElementById('back-btn');
+  const toast = document.getElementById('toast');
+  const topHeader = document.getElementById('topHeader');
 
-    products.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'product';
-        const title = document.createElement('h2');
-        title.textContent = p.name;
-        div.appendChild(title);
+  let activeProduct = null;
 
-        for (const qty in p.prices) {
-            const btn = document.createElement('button');
-            btn.className = 'buy';
-            btn.textContent = `${qty} unité(s) : ${p.prices[qty]}€`;
-            btn.onclick = () => {
-                // Envoyer les infos au bot
-                tg.sendData(JSON.stringify({product: p.name, quantity: qty}));
-                alert(`Vous avez sélectionné ${qty} ${p.name}`);
-            };
-            div.appendChild(btn);
+  // Header shrink on scroll
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const s = window.scrollY;
+    if (s > 10) topHeader.classList.add('scrolled'); else topHeader.classList.remove('scrolled');
+    lastScroll = s;
+  }, {passive:true});
+
+  // Helper: show toast
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=> toast.classList.remove('show'), 2100);
+  }
+
+  // Build grid with lazy media via IntersectionObserver
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(ent => {
+      if (ent.isIntersecting){
+        const el = ent.target;
+        const src = el.dataset.src;
+        const type = el.dataset.type;
+        if (type === 'video'){
+          const v = document.createElement('video');
+          v.src = src; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+          el.appendChild(v);
+        } else {
+          const img = document.createElement('img');
+          img.loading = 'lazy'; img.src = src; img.alt = el.dataset.alt || '';
+          el.appendChild(img);
         }
-
-        // Bouton Contact Telegram
-        const contactBtn = document.createElement('button');
-        contactBtn.className = 'contact';
-        contactBtn.textContent = "Contact Telegram";
-        contactBtn.onclick = () => window.open("https://t.me/High3rCryptoCali_bot/fff", "_blank");
-        div.appendChild(contactBtn);
-
-        productsDiv.appendChild(div);
+        io.unobserve(el);
+      }
     });
-</script>
+  }, {rootMargin:'120px'});
 
+  // Fill grid
+  products.forEach((p, idx) => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.tabIndex = 0;
+    card.setAttribute('role','button');
+    // media placeholder (will lazy load)
+    const mediaWrap = document.createElement('div');
+    mediaWrap.className = 'media-wrap';
+    mediaWrap.dataset.src = p.media;
+    mediaWrap.dataset.type = p.type;
+    mediaWrap.dataset.alt = p.name;
+    card.appendChild(mediaWrap);
+    io.observe(mediaWrap);
+
+    const body = document.createElement('div'); body.className = 'card-body';
+    const title = document.createElement('h3'); title.textContent = p.name;
+    const badge = document.createElement('div'); badge.className = 'badge';
+    // show lowest price
+    const minPrice = Math.min(...Object.values(p.basePrices));
+    badge.textContent = `${minPrice}€ dès`;
+    body.appendChild(title);
+    body.appendChild(badge);
+    card.appendChild(body);
+
+    card.addEventListener('click', ()=> openProduct(idx));
+    card.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') openProduct(idx); });
+
+    grid.appendChild(card);
+  });
+
+  // Open product
+  function openProduct(index){
+    const p = products[index];
+    activeProduct = p;
+    // media
+    productMedia.innerHTML = '';
+    if (p.type === 'video'){
+      const v = document.createElement('video');
+      v.src = p.media; v.controls = true; v.autoplay = false; v.playsInline = true;
+      productMedia.appendChild(v);
+    } else {
+      const img = document.createElement('img');
+      img.src = p.media; img.alt = p.name;
+      productMedia.appendChild(img);
+    }
+    // texts
+    productName.textContent = p.name;
+    productDesc.textContent = p.description;
+    // default quantity -> 1
+    qtyInput.value = '1';
+    // price calc: use price mapping — choose nearest defined tier (we'll show unit price corresponding to qty if exact match, else best per-unit).
+    updatePrices();
+    // show pages
+    homePage.style.display = 'none';
+    productPage.style.display = 'block';
+    productPage.setAttribute('aria-hidden','false');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // Compute price for current qty
+  function computePrice(qty){
+    qty = Number(qty) || 1;
+    const tiers = activeProduct.basePrices;
+    // if exact match exists -> use that price
+    if (tiers[qty]) return Number(tiers[qty]);
+    // otherwise: find the largest tier <= qty to apply bulk price proportionally, or fallback to per-unit min price
+    const keys = Object.keys(tiers).map(Number).sort((a,b)=>a-b);
+    let chosen = null;
+    for (let i=0;i<keys.length;i++){
+      if (qty >= keys[i]) chosen = keys[i];
+    }
+    if (chosen !== null) {
+      // treat chosen price as total for chosen units -> compute per unit then multiply
+      const priceForChosen = tiers[chosen];
+      const unit = priceForChosen / chosen;
+      return Math.round(unit * qty * 100) / 100;
+    }
+    // fallback: smallest tier per unit
+    const smallest = keys[0];
+    const unit = tiers[smallest] / smallest;
+    return Math.round(unit * qty * 100) / 100;
+  }
+
+  function updatePrices(){
+    const q = Math.max(1, parseInt(qtyInput.value) || 1);
+    const unitPriceVal = (function(){
+      const tiers = activeProduct.basePrices;
+      // if exact match: unit price = tiers[q]/q
+      if (tiers[q]) return Math.round((tiers[q]/q)*100)/100;
+      // else take best per-unit among tiers
+      let bestPer = Infinity;
+      for (const k in tiers){
+        const per = tiers[k]/Number(k);
+        if (per < bestPer) bestPer = per;
+      }
+      return Math.round(bestPer*100)/100;
+    })();
+    const total = computePrice(q);
+    productPrice.textContent = `${unitPriceVal}€/u`;
+    totalPrice.textContent = `${total}€`;
+  }
+
+  // Stepper handlers
+  qtyIncr.addEventListener('click', ()=> {
+    qtyInput.value = String(Math.min(999, Number(qtyInput.value||1) + 1));
+    updatePrices();
+  });
+  qtyDecr.addEventListener('click', ()=> {
+    qtyInput.value = String(Math.max(1, Number(qtyInput.value||1) - 1));
+    updatePrices();
+  });
+  qtyInput.addEventListener('input', ()=> {
+    // keep only digits
+    qtyInput.value = qtyInput.value.replace(/[^\d]/g,'') || '1';
+    // cap
+    if (Number(qtyInput.value) > 999) qtyInput.value = '999';
+    if (Number(qtyInput.value) < 1) qtyInput.value = '1';
+    updatePrices();
+  });
+
+  // Buy action
+  buyBtn.addEventListener('click', ()=> {
+    const qty = Number(qtyInput.value) || 1;
+    const total = computePrice(qty);
+    const payload = { product: activeProduct.id || activeProduct.name, name: activeProduct.name, quantity: qty, total: total };
+    // send via Telegram WebApp if available
+    if (tg?.sendData){
+      try{
+        tg.sendData(JSON.stringify(payload));
+        showToast('✅ Sélection envoyée au bot');
+      }catch(e){
+        showToast('Erreur d\'envoi (check console)');
+        console.error(e);
+      }
+    } else {
+      // fallback
+      showToast('Mode demo — envoi simulé');
+      console.log('Payload', payload);
+    }
+  });
+
+  // Contact
+  contactBtn.addEventListener('click', ()=> {
+    window.open('https://t.me/High3rCryptoCali_bot', '_blank');
+  });
+
+  // Back
+  backBtn.addEventListener('click', ()=> {
+    productPage.style.display = 'none';
+    productPage.setAttribute('aria-hidden','true');
+    homePage.style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  // Accessibility: close on Escape
+  document.addEventListener('keydown', (e)=> {
+    if (e.key === 'Escape' && productPage.style.display === 'block'){
+      backBtn.click();
+    }
+  });
+
+  // Preload first media small (improve perceived perf)
+  const firstMedia = products[0]?.media;
+  if (firstMedia){
+    const link = document.createElement('link'); link.rel='preload';
+    if (products[0].type==='video') link.as='video'; else link.as='image';
+    link.href = firstMedia;
+    document.head.appendChild(link);
+  }
+
+</script>
 </body>
 </html>
