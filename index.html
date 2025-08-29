@@ -44,11 +44,7 @@
       justify-content:space-between;
       box-shadow:0 1px 0 rgba(0,0,0,0.3);
     }
-    header img{
-      height:60px;
-      object-fit:contain;
-      display:block;
-    }
+    header img{height:60px;object-fit:contain;display:block}
     .btn-switch{
       background:var(--accent);
       color:#fff;
@@ -130,31 +126,14 @@
       box-shadow:0 10px 40px rgba(0,0,0,0.6);
       max-width:400px;
     }
-    .modal-content h2 {
-      margin-bottom:20px;
-      color:#fff;
-    }
-    .category-options {
-      display:flex;
-      gap:20px;
-      justify-content:center;
-    }
+    .modal-content h2 {margin-bottom:20px;color:#fff;}
+    .category-options {display:flex;gap:20px;justify-content:center;}
     .category-btn {
-      border:none;
-      background:none;
-      cursor:pointer;
-      text-align:center;
-      color:#fff;
-      font-weight:700;
-      transition:transform .2s;
+      border:none;background:none;cursor:pointer;text-align:center;
+      color:#fff;font-weight:700;transition:transform .2s;
     }
     .category-btn img {
-      width:120px;
-      height:120px;
-      border-radius:12px;
-      object-fit:cover;
-      display:block;
-      margin-bottom:8px;
+      width:120px;height:120px;border-radius:12px;object-fit:cover;display:block;margin-bottom:8px;
     }
     .category-btn:hover {transform:scale(1.05);}
   </style>
@@ -185,7 +164,7 @@
 
 <main>
   <section id="home-page">
-    <h2>Produits disponibles</h2>
+    <h2 id="category-title">Produits disponibles</h2>
     <div class="grid" id="products-grid"></div>
   </section>
 
@@ -214,13 +193,11 @@ const hashProducts = [
   { id:1, title:"Hash Afghan", desc:"Un hash résineux et puissant.", media:"header.png" },
   { id:2, title:"Hash Marocain", desc:"Saveurs épicées, texture douce.", media:"header.png" }
 ];
-
 const weedProducts = [
   { id:3, title:"Weed Amnesia", desc:"Variété sativa très populaire.", media:"header.png" },
   { id:4, title:"Weed Gelato", desc:"Arômes sucrés et effet relaxant.", media:"header.png" },
   { id:5, title:"Weed OG Kush", desc:"Saveur terreuse et forte puissance.", media:"header.png" }
 ];
-
 const variants = [
   {label:"1g", price:10},
   {label:"5g", price:45},
@@ -239,6 +216,7 @@ const priceDiv = document.getElementById("price");
 const buyBtn = document.getElementById("buyBtn");
 const backBtn = document.getElementById("backBtn");
 const categoryModal = document.getElementById("categoryModal");
+const categoryTitle = document.getElementById("category-title");
 
 let currentProduct = null;
 let currentVariantIndex = 0;
@@ -250,8 +228,10 @@ function loadCategory(category){
   categoryModal.style.display = "none"; // cacher le popup
   grid.innerHTML = "";
 
+  // Mise à jour du titre
+  categoryTitle.textContent = category === "hash" ? "Produits Hash" : "Produits Weed";
+
   const products = category === "hash" ? hashProducts : weedProducts;
-  
   products.forEach(p=>{
     const card = document.createElement("div");
     card.className = "card";
